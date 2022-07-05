@@ -1,0 +1,33 @@
+name: Prettier
+
+on: [pull_request]
+
+jobs:
+  prettier:
+    runs-on: ubuntu-latest
+    steps:
+      - name: check
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.head_ref }}
+      # Use the same version as `format`
+      - uses: creyD/prettier_action@6602189cf8bac1ce73ffe601925f6127ab7f21ac 
+        with:
+          dry: True
+          prettier_options: --check **/*.{md,yaml}
+      - if: failure()
+        id: generate_token
+      # Pin to a specific commit to reduce the risk of token leaks by other versions.
+      # tibdex/github-app-token@v1.5.2 (586e1a624db6a5a4ac2c53daeeded60c5e3d50fe)
+        uses: tibdex/github-app-token@586e1a624db6a5a4ac2c53daeeded60c5e3d50fe
+        with:
+          app_id: ${{ secrets.TOKEN_APP_ID }}
+          private_key: ${{ secrets.TOKEN_APP_KEY }}
+      - if: failure()
+        name: format
+      # Pin to a specific commit to reduce the risk of token leaks by other versions.
+      # creyD/prettier_action@v4.2 (6602189cf8bac1ce73ffe601925f6127ab7f21ac)
+        uses: creyD/prettier_action@6602189cf8bac1ce73ffe601925f6127ab7f21ac
+        with:
+          prettier_options: --write **/*.{md,yaml}
+          github_token: ${{ steps.generate_token.outputs.token }}
