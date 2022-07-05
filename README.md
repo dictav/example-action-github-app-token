@@ -1,8 +1,5 @@
 # Example of GitHub App Token
 
-
-|num|text|
-|-|-|
-|1|hello|
-
-
+| num | text  |
+| --- | ----- |
+| 1   | hello |
